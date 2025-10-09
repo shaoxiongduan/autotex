@@ -1,0 +1,15 @@
+**/*.ts
+**/*.map
+.gitignore
+.vscode
+.vscode-test
+src/
+tsconfig.json
+.eslintrc.json
+node_modules/
+*.vsix
+.DS_Store
+idea.md
+SETUP.md
+example.tex
+

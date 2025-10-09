@@ -1,0 +1,216 @@
+{
+  "name": "autotex",
+  "displayName": "AutoTeX",
+  "description": "Automatically convert rough draft notes into compilable LaTeX code using local LLM",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "autotex.convertRoughDraft",
+        "title": "AutoTeX: Convert Rough Draft to LaTeX"
+      },
+      {
+        "command": "autotex.toggleAutoConvert",
+        "title": "AutoTeX: Toggle Auto-Convert"
+      },
+      {
+        "command": "autotex.checkServerStatus",
+        "title": "AutoTeX: Check Server Status"
+      },
+      {
+        "command": "autotex.startServer",
+        "title": "AutoTeX: Start LM Studio Server"
+      },
+      {
+        "command": "autotex.showDebugPanel",
+        "title": "AutoTeX: Show Debug Panel"
+      },
+      {
+        "command": "autotex.toggleDraftHighlighting",
+        "title": "AutoTeX: Toggle Draft Highlighting"
+      },
+      {
+        "command": "autotex.convertAllDrafts",
+        "title": "AutoTeX: Convert All Drafts to LaTeX"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "autotex.convertAllDrafts",
+        "key": "shift shift",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "AutoTeX",
+      "properties": {
+        "autotex.lmStudioUrl": {
+          "type": "string",
+          "default": "http://localhost:1234/v1/chat/completions",
+          "description": "LM Studio API endpoint URL"
+        },
+        "autotex.modelName": {
+          "type": "string",
+          "default": "qwen/qwen3-4b-2507",
+          "description": "Model name to use in LM Studio"
+        },
+        "autotex.temperature": {
+          "type": "number",
+          "default": 0.3,
+          "description": "Temperature for LLM generation (0.0-1.0, lower is more deterministic)"
+        },
+        "autotex.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "Maximum tokens for LLM response"
+        },
+        "autotex.autoSaveEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save clean LaTeX file after conversion"
+        },
+        "autotex.outputDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for saving clean LaTeX files (empty = same as source)"
+        },
+        "autotex.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable auto-conversion feature"
+        },
+        "autotex.highlightDrafts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight draft sections in the editor"
+        },
+        "autotex.draftHighlightColor": {
+          "type": "string",
+          "default": "green",
+          "enum": [
+            "green",
+            "yellow",
+            "blue",
+            "purple",
+            "custom"
+          ],
+          "description": "Color scheme for draft highlighting"
+        },
+        "autotex.draftDetectionMethod": {
+          "type": "string",
+          "default": "diff",
+          "enum": [
+            "diff",
+            "heuristic",
+            "both"
+          ],
+          "enumDescriptions": [
+            "Use diff-based detection (compares with saved state)",
+            "Use heuristic detection (analyzes text patterns)",
+            "Use both methods for comprehensive detection"
+          ],
+          "description": "Method for detecting draft sections"
+        },
+        "autotex.minDraftConfidence": {
+          "type": "number",
+          "default": 0.4,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum confidence (0-1) required to treat text as a draft"
+        },
+        "autotex.automaticDraftDetection": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable automatic draft detection based on text analysis"
+        },
+        "autotex.manualDraftBlocks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable manual draft marking using ```autotex code blocks"
+        },
+        "autotex.enabledFileTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["latex", "tex"],
+          "description": "List of file types/language IDs to enable AutoTeX for (e.g., 'markdown', 'plaintext', 'latex', 'tex')"
+        },
+        "autotex.systemPrompt": {
+          "type": "string",
+          "default": "Convert rough draft text into compilable LaTeX code. Infer the content type (equation, pseudocode, plain text, code block, etc.) and apply the appropriate LaTeX syntax and environments. Formalize rough or incomplete notation into proper LaTeX while preserving all values and meanings—never change numerical values, variable names, or remove elements, even if they appear incorrect. Add minimal formatting only when necessary for readability.\nOutput only the LaTeX content itself—do not include document preamble, \\documentclass, \\usepackage, \\begin{document}, or \\end{document} tags. Provide only the code that would appear in the document body.",
+          "editPresentation": "multilineText",
+          "description": "System prompt for the LLM model. Customize how the AI converts your drafts to LaTeX."
+        }
+      }
+    },
+    "colors": [
+      {
+        "id": "autotex.draftBackground",
+        "description": "Background color for high-confidence draft sections",
+        "defaults": {
+          "dark": "#00ff0015",
+          "light": "#00ff0020",
+          "highContrast": "#00ff0025"
+        }
+      },
+      {
+        "id": "autotex.draftBackgroundLowConfidence",
+        "description": "Background color for low-confidence draft sections",
+        "defaults": {
+          "dark": "#ffff0010",
+          "light": "#ffff0015",
+          "highContrast": "#ffff0020"
+        }
+      },
+      {
+        "id": "autotex.draftOverviewRuler",
+        "description": "Overview ruler color for high-confidence draft sections",
+        "defaults": {
+          "dark": "#00ff0080",
+          "light": "#00ff0080",
+          "highContrast": "#00ff00"
+        }
+      },
+      {
+        "id": "autotex.draftOverviewRulerLowConfidence",
+        "description": "Overview ruler color for low-confidence draft sections",
+        "defaults": {
+          "dark": "#ffff0080",
+          "light": "#ffff0080",
+          "highContrast": "#ffff00"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "diff": "^8.0.2"
+  }
+}
