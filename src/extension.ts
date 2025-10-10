@@ -125,6 +125,22 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
+    const insertCodeBlockCommand = vscode.commands.registerCommand(
+        'autotex.insertCodeBlock',
+        async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showErrorMessage('No active editor found');
+                return;
+            }
+
+            const position = editor.selection.active;
+            const snippet = new vscode.SnippetString('```autotex\n$0\n```');
+            
+            await editor.insertSnippet(snippet, position);
+        }
+    );
+
     // Register disposables
     context.subscriptions.push(
         convertCommand,
@@ -134,6 +150,7 @@ export function activate(context: vscode.ExtensionContext) {
         showDebugPanelCommand,
         toggleDraftHighlightingCommand,
         convertAllDraftsCommand,
+        insertCodeBlockCommand,
         serverManager,
         debugPanel
     );

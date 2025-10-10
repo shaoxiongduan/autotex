@@ -42,12 +42,22 @@
       {
         "command": "autotex.convertAllDrafts",
         "title": "AutoTeX: Convert All Drafts to LaTeX"
+      },
+      {
+        "command": "autotex.insertCodeBlock",
+        "title": "AutoTeX: Insert Code Block"
       }
     ],
     "keybindings": [
       {
         "command": "autotex.convertAllDrafts",
         "key": "shift shift",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "autotex.insertCodeBlock",
+        "key": "ctrl ctrl",
+        "mac": "ctrl ctrl",
         "when": "editorTextFocus"
       }
     ],
