@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { InputMonitor } from './inputMonitor';
 import { DocumentStateManager } from './documentStateManager';
-import { LMStudioClient } from './lmStudioClient';
+import { ProviderFactory } from './providers/providerFactory';
 import { TextReplacer } from './textReplacer';
 import { AutoSaveManager } from './autoSaveManager';
 import { ServerManager } from './serverManager';
@@ -9,7 +9,6 @@ import { DebugPanel } from './debugPanel';
 
 let inputMonitor: InputMonitor | undefined;
 let documentStateManager: DocumentStateManager;
-let lmStudioClient: LMStudioClient;
 let textReplacer: TextReplacer;
 let autoSaveManager: AutoSaveManager;
 let serverManager: ServerManager;
@@ -20,7 +19,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Initialize services
     documentStateManager = new DocumentStateManager();
-    lmStudioClient = new LMStudioClient();
     textReplacer = new TextReplacer();
     autoSaveManager = new AutoSaveManager();
     serverManager = new ServerManager();
@@ -32,7 +30,6 @@ export function activate(context: vscode.ExtensionContext) {
     // Initialize input monitor
     inputMonitor = new InputMonitor(
         documentStateManager,
-        lmStudioClient,
         textReplacer,
         autoSaveManager,
         serverManager
@@ -141,6 +138,31 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
+    const selectProviderCommand = vscode.commands.registerCommand(
+        'autotex.selectProvider',
+        async () => {
+            const providers = ProviderFactory.getAvailableProviders();
+            const items = providers.map(p => ({
+                label: p.name,
+                description: p.description,
+                detail: p.id,
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Select an LLM provider for AutoTeX',
+            });
+
+            if (selected) {
+                const config = vscode.workspace.getConfiguration('autotex');
+                await config.update('provider', selected.detail, vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage(`AutoTeX provider switched to ${selected.label}`);
+                
+                // Check the new provider's status
+                await serverManager.checkServerStatus();
+            }
+        }
+    );
+
     // Register disposables
     context.subscriptions.push(
         convertCommand,
@@ -151,6 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
         toggleDraftHighlightingCommand,
         convertAllDraftsCommand,
         insertCodeBlockCommand,
+        selectProviderCommand,
         serverManager,
         debugPanel
     );
@@ -166,5 +189,7 @@ export function deactivate() {
     if (serverManager) {
         serverManager.dispose();
     }
+    // Dispose provider factory
+    ProviderFactory.dispose();
 }
 

@@ -46,6 +46,10 @@
       {
         "command": "autotex.insertCodeBlock",
         "title": "AutoTeX: Insert Code Block"
+      },
+      {
+        "command": "autotex.selectProvider",
+        "title": "AutoTeX: Select Provider"
       }
     ],
     "keybindings": [
@@ -64,15 +68,60 @@
     "configuration": {
       "title": "AutoTeX",
       "properties": {
-        "autotex.lmStudioUrl": {
+        "autotex.provider": {
+          "type": "string",
+          "default": "lmstudio",
+          "enum": [
+            "lmstudio",
+            "openrouter",
+            "openai"
+          ],
+          "enumDescriptions": [
+            "LM Studio - Local LLM server running on your machine",
+            "OpenRouter - Access to multiple models via OpenRouter API",
+            "OpenAI - OpenAI GPT models (requires API key)"
+          ],
+          "description": "LLM provider to use for LaTeX conversion"
+        },
+        "autotex.lmStudio.apiUrl": {
           "type": "string",
           "default": "http://localhost:1234/v1/chat/completions",
           "description": "LM Studio API endpoint URL"
         },
-        "autotex.modelName": {
+        "autotex.lmStudio.modelName": {
           "type": "string",
           "default": "qwen/qwen3-4b-2507",
           "description": "Model name to use in LM Studio"
+        },
+        "autotex.openRouter.apiUrl": {
+          "type": "string",
+          "default": "https://openrouter.ai/api/v1/chat/completions",
+          "description": "OpenRouter API endpoint URL"
+        },
+        "autotex.openRouter.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenRouter API key (get one at https://openrouter.ai/)"
+        },
+        "autotex.openRouter.modelName": {
+          "type": "string",
+          "default": "meta-llama/llama-3.1-8b-instruct:free",
+          "description": "Model to use from OpenRouter (e.g., meta-llama/llama-3.1-8b-instruct:free, anthropic/claude-3.5-sonnet)"
+        },
+        "autotex.openAI.apiUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1/chat/completions",
+          "description": "OpenAI API endpoint URL"
+        },
+        "autotex.openAI.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API key (get one at https://platform.openai.com/)"
+        },
+        "autotex.openAI.modelName": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "OpenAI model to use (e.g., gpt-4o-mini, gpt-4o, gpt-4-turbo)"
         },
         "autotex.temperature": {
           "type": "number",

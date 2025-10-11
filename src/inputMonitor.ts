@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { DocumentStateManager } from './documentStateManager';
-import { LMStudioClient } from './lmStudioClient';
+import { ProviderFactory } from './providers/providerFactory';
 import { TextReplacer } from './textReplacer';
 import { AutoSaveManager } from './autoSaveManager';
 import { ServerManager } from './serverManager';
@@ -17,7 +17,6 @@ export class InputMonitor implements vscode.Disposable {
     
     constructor(
         private documentStateManager: DocumentStateManager,
-        private lmStudioClient: LMStudioClient,
         private textReplacer: TextReplacer,
         private autoSaveManager: AutoSaveManager,
         private serverManager: ServerManager
@@ -262,7 +261,8 @@ export class InputMonitor implements vscode.Disposable {
                         }
 
                         // Call LM Studio
-                        const latexCode = await this.lmStudioClient.convertToLatex(draft.text);
+                        const provider = ProviderFactory.getProvider();
+                        const latexCode = await provider.convertToLatex(draft.text);
 
                         // Register conversion
                         const conversionId = this.documentStateManager.registerConversion(

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import axios from 'axios';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { ProviderFactory } from './providers/providerFactory';
 
 const execAsync = promisify(exec);
 
@@ -9,6 +10,7 @@ export class ServerManager {
     private serverCheckInterval: NodeJS.Timeout | undefined;
     private isServerRunning: boolean = false;
     private statusBarItem: vscode.StatusBarItem;
+    private currentProviderName: string = '';
 
     constructor() {
         // Create status bar item
@@ -22,7 +24,7 @@ export class ServerManager {
     }
 
     /**
-     * Start monitoring the LM Studio server
+     * Start monitoring the provider server/API
      */
     async startMonitoring(): Promise<void> {
         // Initial check
@@ -32,37 +34,51 @@ export class ServerManager {
         this.serverCheckInterval = setInterval(async () => {
             await this.checkServerStatus();
         }, 30000);
+
+        // Listen for configuration changes
+        vscode.workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration('autotex.provider')) {
+                this.checkServerStatus();
+            }
+        });
     }
 
     /**
-     * Check if the LM Studio server is running
+     * Check if the current provider is available
      */
     async checkServerStatus(): Promise<boolean> {
-        const config = vscode.workspace.getConfiguration('autotex');
-        const apiUrl = config.get<string>('lmStudioUrl', 'http://localhost:1234/v1/chat/completions');
-
         try {
-            // Try to ping the server
-            await axios.get(apiUrl.replace('/v1/chat/completions', '/v1/models'), {
-                timeout: 3000,
-            });
+            const provider = ProviderFactory.getProvider();
+            this.currentProviderName = provider.getName();
             
-            this.isServerRunning = true;
-            this.updateStatusBar('running');
-            return true;
+            const status = await provider.checkAvailability();
+            
+            this.isServerRunning = status.isAvailable;
+            this.updateStatusBar(status.isAvailable ? 'running' : 'stopped', status.message);
+            return status.isAvailable;
         } catch (error) {
             this.isServerRunning = false;
-            this.updateStatusBar('stopped');
+            this.updateStatusBar('stopped', 'Failed to check provider status');
             return false;
         }
     }
 
     /**
-     * Attempt to start the LM Studio server
+     * Attempt to start the LM Studio server (only applicable for LM Studio provider)
      */
     async startServer(): Promise<boolean> {
         const config = vscode.workspace.getConfiguration('autotex');
-        const modelName = config.get<string>('modelName', 'qwen/qwen3-4b-2507');
+        const providerType = config.get<string>('provider', 'lmstudio');
+
+        // Only LM Studio needs manual server start
+        if (providerType !== 'lmstudio') {
+            vscode.window.showInformationMessage(
+                `The ${this.currentProviderName} provider doesn't require a local server.`
+            );
+            return await this.checkServerStatus();
+        }
+
+        const modelName = config.get<string>('lmStudio.modelName', 'qwen/qwen3-4b-2507');
 
         try {
             // Show progress
@@ -155,7 +171,7 @@ export class ServerManager {
     }
 
     /**
-     * Ensure server is running, start it if not
+     * Ensure provider is available, start it if needed (for LM Studio)
      */
     async ensureServerRunning(): Promise<boolean> {
         if (this.isServerRunning) {
@@ -167,7 +183,27 @@ export class ServerManager {
             return true;
         }
 
-        // Ask user if they want to start the server
+        const config = vscode.workspace.getConfiguration('autotex');
+        const providerType = config.get<string>('provider', 'lmstudio');
+
+        // For API-based providers, just show the configuration error
+        if (providerType === 'openrouter' || providerType === 'openai') {
+            const providerName = providerType === 'openrouter' ? 'OpenRouter' : 'OpenAI';
+            const settingName = providerType === 'openrouter' ? 'autotex.openRouter.apiKey' : 'autotex.openAI.apiKey';
+            
+            const action = await vscode.window.showErrorMessage(
+                `${providerName} is not configured or unavailable. Please check your API key and settings.`,
+                'Open Settings',
+                'Cancel'
+            );
+
+            if (action === 'Open Settings') {
+                vscode.commands.executeCommand('workbench.action.openSettings', settingName);
+            }
+            return false;
+        }
+
+        // For LM Studio, ask if they want to start the server
         const action = await vscode.window.showWarningMessage(
             'LM Studio server is not running. Would you like to start it?',
             'Start Server',
@@ -178,8 +214,7 @@ export class ServerManager {
         if (action === 'Start Server') {
             return await this.startServer();
         } else if (action === 'Start Manually') {
-            const config = vscode.workspace.getConfiguration('autotex');
-            const modelName = config.get<string>('modelName', 'qwen/qwen3-4b-2507');
+            const modelName = config.get<string>('lmStudio.modelName', 'qwen/qwen3-4b-2507');
             
             vscode.window.showInformationMessage(
                 'Please start LM Studio manually:\n' +
@@ -197,23 +232,25 @@ export class ServerManager {
     /**
      * Update status bar item
      */
-    private updateStatusBar(status: 'running' | 'stopped' | 'unknown'): void {
+    private updateStatusBar(status: 'running' | 'stopped' | 'unknown', message?: string): void {
+        const providerName = this.currentProviderName || 'AutoTeX';
+        
         switch (status) {
             case 'running':
-                this.statusBarItem.text = '$(vm-running) LM Studio';
-                this.statusBarItem.tooltip = 'LM Studio server is running';
+                this.statusBarItem.text = `$(vm-running) ${providerName}`;
+                this.statusBarItem.tooltip = message || `${providerName} is available`;
                 this.statusBarItem.backgroundColor = undefined;
                 break;
             case 'stopped':
-                this.statusBarItem.text = '$(vm-outline) LM Studio';
-                this.statusBarItem.tooltip = 'LM Studio server is not running (click to start)';
+                this.statusBarItem.text = `$(vm-outline) ${providerName}`;
+                this.statusBarItem.tooltip = message || `${providerName} is not available (click to check)`;
                 this.statusBarItem.backgroundColor = new vscode.ThemeColor(
                     'statusBarItem.warningBackground'
                 );
                 break;
             case 'unknown':
-                this.statusBarItem.text = '$(question) LM Studio';
-                this.statusBarItem.tooltip = 'LM Studio server status unknown';
+                this.statusBarItem.text = `$(question) ${providerName}`;
+                this.statusBarItem.tooltip = message || `${providerName} status unknown`;
                 this.statusBarItem.backgroundColor = undefined;
                 break;
         }

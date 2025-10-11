@@ -1,11 +1,14 @@
 # AutoTeX
 
-Automatically convert rough draft notes into compilable LaTeX code using a locally-running LLM.
+Automatically convert rough draft notes into compilable LaTeX code using your choice of LLM provider.
 
 ## Features
 
 - **Automatic Conversion**: Type rough notes in your LaTeX file, press Enter 3 times, and watch them transform into proper LaTeX code
-- **Local LLM**: Uses LM Studio with `qwen-3-4b-instruct-no-thinking` model for privacy and speed
+- **Multiple Providers**: Choose between LM Studio (local), OpenRouter, or OpenAI
+  - **LM Studio**: Privacy-focused local processing (free, no API costs)
+  - **OpenRouter**: Access to multiple models including free options
+  - **OpenAI**: High-quality GPT models
 - **Smart Detection**: Automatically infers content type (equations, pseudocode, text, code blocks) and applies appropriate LaTeX syntax
 - **Diff-Based Draft Detection**: Intelligently detects draft sections by comparing with saved state
 - **Paste Intelligence**: Analyzes pasted content to determine if it's a draft or formatted LaTeX
@@ -17,10 +20,19 @@ Automatically convert rough draft notes into compilable LaTeX code using a local
 ## Prerequisites
 
 1. **Visual Studio Code** (v1.85.0 or higher)
-2. **LM Studio** installed and running
-   - Download from: https://lmstudio.ai/
-   - Install the `qwen-3-4b-instruct-no-thinking` model (or your preferred model)
-   - Start the local API server (default: http://localhost:1234)
+2. **Choose your LLM provider**:
+   - **Option A - LM Studio** (local, private, free):
+     - Download from: https://lmstudio.ai/
+     - Install a model (recommended: `qwen-3-4b-instruct-no-thinking`)
+     - Start the local API server (default: http://localhost:1234)
+   - **Option B - OpenRouter** (cloud, multiple models):
+     - Sign up at: https://openrouter.ai/
+     - Get an API key (many free models available)
+   - **Option C - OpenAI** (cloud, GPT models):
+     - Sign up at: https://platform.openai.com/
+     - Get an API key and add credits
+
+For detailed setup instructions, see [PROVIDERS.md](PROVIDERS.md).
 
 ## Installation
 
