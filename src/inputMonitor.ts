@@ -97,11 +97,11 @@ export class InputMonitor implements vscode.Disposable {
     }
 
     private async triggerConversion(editor: vscode.TextEditor): Promise<void> {
-        // Check if server is running first
+        // Check if provider is available first
         if (!this.serverManager.getServerStatus()) {
-            const serverStarted = await this.serverManager.ensureServerRunning();
-            if (!serverStarted) {
-                vscode.window.showErrorMessage('LM Studio server is not running. Please start it to use AutoTeX.');
+            const providerAvailable = await this.serverManager.ensureServerRunning();
+            if (!providerAvailable) {
+                // Error message already shown by ensureServerRunning
                 return;
             }
         }
@@ -198,7 +198,7 @@ export class InputMonitor implements vscode.Disposable {
         }
 
         // Get detection settings
-        const useAutomatic = config.get<boolean>('automaticDraftDetection', true);
+        const useAutomatic = config.get<boolean>('automaticDraftDetection', false);
         const useManual = config.get<boolean>('manualDraftBlocks', true);
 
         const draftRegions = this.draftDetector.detectDraftRegions(editor.document, useAutomatic, useManual);
@@ -210,7 +210,7 @@ export class InputMonitor implements vscode.Disposable {
      */
     private getAllDraftRegions(editor: vscode.TextEditor): DraftRegion[] {
         const config = vscode.workspace.getConfiguration('autotex');
-        const useAutomatic = config.get<boolean>('automaticDraftDetection', true);
+        const useAutomatic = config.get<boolean>('automaticDraftDetection', false);
         const useManual = config.get<boolean>('manualDraftBlocks', true);
         return this.draftDetector.detectDraftRegions(editor.document, useAutomatic, useManual);
     }
@@ -219,6 +219,9 @@ export class InputMonitor implements vscode.Disposable {
      * Convert all draft regions to LaTeX
      */
     private async convertAllDrafts(editor: vscode.TextEditor): Promise<void> {
+        const config = vscode.workspace.getConfiguration('autotex');
+        const minConfidence = config.get<number>('minDraftConfidence', 0.4);
+        
         const draftRegions = this.getAllDraftRegions(editor);
         
         if (draftRegions.length === 0) {
@@ -251,7 +254,7 @@ export class InputMonitor implements vscode.Disposable {
 
                     try {
                         // Only convert if confidence is high enough
-                        if (draft.confidence < 0.4) {
+                        if (draft.confidence < minConfidence) {
                             continue;
                         }
 
@@ -260,7 +263,7 @@ export class InputMonitor implements vscode.Disposable {
                             continue;
                         }
 
-                        // Call LM Studio
+                        // Call LLM provider
                         const provider = ProviderFactory.getProvider();
                         const latexCode = await provider.convertToLatex(draft.text);
 

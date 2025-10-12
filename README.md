@@ -1,274 +1,140 @@
 # AutoTeX
 
-Automatically convert rough draft notes into compilable LaTeX code using your choice of LLM provider.
+**Convert rough draft notes into compilable LaTeX code using AI.**
+
+AutoTeX is a VS Code extension that automatically transforms your rough mathematical notes, equations, and pseudocode into properly formatted LaTeX. Type naturally, press Shift twice, and watch your drafts become publication-ready code.
 
 ## Features
 
-- **Automatic Conversion**: Type rough notes in your LaTeX file, press Enter 3 times, and watch them transform into proper LaTeX code
-- **Multiple Providers**: Choose between LM Studio (local), OpenRouter, or OpenAI
-  - **LM Studio**: Privacy-focused local processing (free, no API costs)
-  - **OpenRouter**: Access to multiple models including free options
-  - **OpenAI**: High-quality GPT models
-- **Smart Detection**: Automatically infers content type (equations, pseudocode, text, code blocks) and applies appropriate LaTeX syntax
-- **Diff-Based Draft Detection**: Intelligently detects draft sections by comparing with saved state
-- **Paste Intelligence**: Analyzes pasted content to determine if it's a draft or formatted LaTeX
-- **Multiple Draft Support**: Detects and converts multiple independent draft sections simultaneously
-- **Visual Highlighting**: Highlights draft sections in green/yellow with detailed hover tooltips showing confidence breakdown
-- **Concurrent Editing**: Tracks conversion regions to prevent overwriting text you're currently editing
-- **Auto-Save**: Automatically saves your clean LaTeX file after each conversion
+- 🤖 **Multiple AI Providers**: Use LM Studio (local/free), OpenRouter, or OpenAI
+- ✨ **Smart Detection**: Automatically identifies draft sections that need formatting
+- 🎨 **Visual Highlighting**: See draft sections highlighted as you type
+- ⚡ **Quick Conversion**: Press Shift×2 to convert all drafts instantly
+- 🔄 **Batch Processing**: Convert multiple draft sections simultaneously
+- 💾 **Auto-Save**: Automatically save after successful conversion
+- 🎯 **Code Blocks**: Mark specific sections with `` ```autotex `` blocks
 
-## Prerequisites
+## Quick Start
 
-1. **Visual Studio Code** (v1.85.0 or higher)
-2. **Choose your LLM provider**:
-   - **Option A - LM Studio** (local, private, free):
-     - Download from: https://lmstudio.ai/
-     - Install a model (recommended: `qwen-3-4b-instruct-no-thinking`)
-     - Start the local API server (default: http://localhost:1234)
-   - **Option B - OpenRouter** (cloud, multiple models):
-     - Sign up at: https://openrouter.ai/
-     - Get an API key (many free models available)
-   - **Option C - OpenAI** (cloud, GPT models):
-     - Sign up at: https://platform.openai.com/
-     - Get an API key and add credits
+1. **Install the extension** from VSIX or build from source
+2. **Choose a provider**:
+   - **LM Studio** (recommended for privacy): Download from [lmstudio.ai](https://lmstudio.ai/), install a model, start the server
+   - **OpenRouter**: Sign up at [openrouter.ai](https://openrouter.ai/) and get an API key
+   - **OpenAI**: Get an API key from [platform.openai.com](https://platform.openai.com/)
+3. **Configure** via Settings → AutoTeX
+4. **Start writing** in any `.tex` file
 
-For detailed setup instructions, see [PROVIDERS.md](PROVIDERS.md).
+## Basic Usage
+
+### Quick Conversion
+
+Type your rough draft and press **Shift twice** (double-tap Shift):
+
+```
+Before:
+let x = (5 + 3) / 2
+solve for x: 2x + 5 = 15
+
+After (auto-converted):
+Let $x = \frac{5 + 3}{2}$
+
+Solve for $x$:
+\begin{equation}
+2x + 5 = 15
+\end{equation}
+```
+
+### Manual Draft Blocks
+
+Mark sections explicitly with code blocks:
+
+````
+```autotex
+for i from 1 to n:
+  sum += i * i
+```
+````
+
+Press **Shift twice** to convert all marked sections.
 
 ## Installation
 
+### From VSIX File
+
+1. Download `autotex-x.x.x.vsix`
+2. In VS Code: Extensions → `...` menu → Install from VSIX
+
 ### From Source
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/autotex.git
-   cd autotex
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Compile the extension:
-   ```bash
-   npm run compile
-   ```
-
-4. Open in VS Code and press `F5` to run the extension in a new Extension Development Host window
-
-### From VSIX
-
-1. Package the extension:
-   ```bash
-   npm install -g @vscode/vsce
-   vsce package
-   ```
-
-2. Install the generated `.vsix` file:
-   - Open VS Code
-   - Go to Extensions view (Ctrl+Shift+X / Cmd+Shift+X)
-   - Click the "..." menu → "Install from VSIX..."
-   - Select the `.vsix` file
-
-## Usage
-
-### Basic Workflow
-
-1. Open or create a `.tex` file in VS Code
-2. Type your rough draft notes (equations, pseudocode, etc.)
-3. Press **Enter three times** consecutively
-4. Wait for the conversion (you'll see a progress notification)
-5. Your rough draft will be replaced with formatted LaTeX code
-
-### Example
-
-**Before (Rough Draft):**
-```
-let's solve for x:
-2x + 5 = 15
-x = (15-5)/2 = 5
-
-now for the loop pseudocode:
-for i from 1 to n:
-  sum += i
-return sum
+```bash
+git clone https://github.com/yourusername/autotex.git
+cd autotex
+npm install
+npm run compile
 ```
 
-**After (Auto-converted):**
-```latex
-Let's solve for $x$:
-\begin{align}
-2x + 5 &= 15 \\
-x &= \frac{15-5}{2} = 5
-\end{align}
+Press `F5` in VS Code to run in development mode.
 
-Now for the loop pseudocode:
-\begin{algorithm}
-\begin{algorithmic}
-\For{$i = 1$ to $n$}
-    \State $\text{sum} \gets \text{sum} + i$
-\EndFor
-\State \Return sum
-\end{algorithmic}
-\end{algorithm}
-```
+## Documentation
 
-## Configuration
+- [Getting Started Guide](docs/getting-started.md) - Detailed setup instructions
+- [Provider Configuration](docs/providers.md) - Setup LM Studio, OpenRouter, or OpenAI
+- [Settings & Commands](docs/configuration.md) - All available settings and commands
+- [Features Explained](docs/features.md) - How draft detection and conversion works
+- [Troubleshooting](docs/troubleshooting.md) - Common issues and solutions
 
-Open VS Code settings and search for "AutoTeX":
+## Key Settings
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `autotex.lmStudioUrl` | `http://localhost:1234/v1/chat/completions` | LM Studio API endpoint |
-| `autotex.modelName` | `qwen-3-4b-instruct-no-thinking` | Model name to use |
-| `autotex.triggerEnterCount` | `3` | Number of consecutive Enter presses to trigger |
-| `autotex.autoSaveEnabled` | `true` | Auto-save after conversion |
-| `autotex.outputDirectory` | `""` | Directory for clean LaTeX files (empty = same as source) |
+| `autotex.provider` | `lmstudio` | Which AI provider to use |
 | `autotex.enabled` | `true` | Enable/disable auto-conversion |
-| `autotex.highlightDrafts` | `true` | Highlight draft sections in editor |
-| `autotex.draftDetectionMethod` | `diff` | Detection method: `diff`, `heuristic`, or `both` |
-| `autotex.minDraftConfidence` | `0.4` | Minimum confidence (0-1) to treat text as draft |
-| `autotex.draftHighlightColor` | `green` | Color scheme for draft highlighting |
+| `autotex.highlightDrafts` | `true` | Highlight draft sections |
+| `autotex.autoSaveEnabled` | `true` | Auto-save after conversion |
+| `autotex.systemPrompt` | (built-in) | Customize AI behavior |
+
+Open VS Code Settings and search "AutoTeX" to configure.
 
 ## Commands
 
-- **AutoTeX: Convert All Drafts to LaTeX** (`Shift+Shift` - double tap Shift) - Convert all detected draft sections in the document
-- **AutoTeX: Convert Rough Draft to LaTeX** - Manually trigger conversion of drafts near cursor
-- **AutoTeX: Toggle Auto-Convert** - Enable/disable automatic conversion
-- **AutoTeX: Toggle Draft Highlighting** - Enable/disable visual highlighting of drafts
-- **AutoTeX: Check Server Status** - Check if LM Studio server is running
-- **AutoTeX: Start LM Studio Server** - Attempt to start LM Studio server
-- **AutoTeX: Show Debug Panel** - Show debug information panel
+- `AutoTeX: Convert All Drafts to LaTeX` (`Shift+Shift`) - Convert all detected drafts
+- `AutoTeX: Insert Code Block` (`Ctrl+Ctrl`) - Insert a manual `autotex` block
+- `AutoTeX: Select Provider` - Switch between LM Studio, OpenRouter, or OpenAI
+- `AutoTeX: Check Server Status` - Verify provider is available
+- `AutoTeX: Toggle Draft Highlighting` - Show/hide draft highlights
 
 ## How It Works
 
-1. **Saved State Tracking**: When you save a document, AutoTeX remembers the content as "saved state"
-2. **Diff-Based Detection**: Compares current content with saved state to find new/changed sections
-3. **Paste Analysis**: Detects pasted text and analyzes whether it's a draft or formatted LaTeX
-4. **Confidence Scoring**: Each draft region gets a confidence score (0-1) based on patterns
-5. **Visual Highlighting**: High-confidence drafts highlighted in green, low-confidence in yellow
-6. **Trigger Detection**: Press Enter 3 times or use "Convert All Drafts" command
-7. **Multi-Draft Conversion**: All draft regions converted simultaneously (bottom-to-top for position preservation)
-8. **LLM Conversion**: Each draft sent to your local LM Studio instance
-9. **Smart Replacement**: Replaces only the original draft regions, even if you've edited elsewhere
-10. **Auto-Save**: Saves your document with the clean LaTeX code
-
-For detailed technical information, see [DRAFT_DETECTION.md](DRAFT_DETECTION.md).
-
-## Troubleshooting
-
-### "Cannot connect to LM Studio"
-
-**Solution:**
-1. Open LM Studio
-2. Go to the "Developer" tab
-3. Click "Start Server"
-4. Ensure it's running on port 1234 (or update the `autotex.lmStudioUrl` setting)
-
-### "No rough draft text found"
-
-**Solution:**
-- Make sure you have some text typed before pressing Enter 3 times
-- The extension looks for text after the last formatted LaTeX section
-
-### Conversion produces incorrect LaTeX
-
-**Solution:**
-1. Try a different model in LM Studio
-2. Adjust the system prompt in `src/lmStudioClient.ts`
-3. Use the manual conversion command to retry
+1. **Type** rough notes in your `.tex` file
+2. **Detection** identifies draft sections using diff analysis or manual blocks
+3. **Highlighting** shows drafts in green (high confidence) or yellow (low confidence)
+4. **Trigger** conversion with Shift×2 or manual command
+5. **AI processes** each draft section and generates LaTeX
+6. **Replace** draft text with formatted LaTeX code
+7. **Save** automatically (if enabled)
 
 ## Development
 
-### Project Structure
-
-```
-autotex/
-├── src/
-│   ├── extension.ts           # Main extension entry point
-│   ├── inputMonitor.ts        # Detects Enter key presses & manages drafts
-│   ├── draftDetector.ts       # Diff-based draft detection with paste handling
-│   ├── draftVisualizer.ts     # Visual highlighting of draft sections
-│   ├── documentStateManager.ts # Tracks conversion regions
-│   ├── lmStudioClient.ts      # LM Studio API client
-│   ├── textReplacer.ts        # Handles text replacement
-│   ├── autoSaveManager.ts     # Auto-save functionality
-│   ├── serverManager.ts       # LM Studio server management
-│   └── debugPanel.ts          # Debug information panel
-├── package.json               # Extension manifest
-├── tsconfig.json             # TypeScript configuration
-├── README.md                 # This file
-└── DRAFT_DETECTION.md        # Detailed draft detection documentation
-```
-
-### Building
-
 ```bash
-# Install dependencies
-npm install
-
-# Compile TypeScript
-npm run compile
-
-# Watch mode (auto-recompile on changes)
-npm run watch
-
-# Lint code
-npm run lint
+npm install          # Install dependencies
+npm run compile      # Compile TypeScript
+npm run watch        # Watch mode for development
+npm run lint         # Run ESLint
 ```
-
-### Testing
-
-```bash
-# Run linter
-npm run lint
-
-# Manual testing
-# Press F5 in VS Code to launch Extension Development Host
-```
-
-## Technical Details
-
-### Stack
-
-- **Platform**: Visual Studio Code Extension API
-- **Language**: TypeScript
-- **LLM Integration**: LM Studio (OpenAI-compatible API)
-- **HTTP Client**: Axios
-- **Diff Algorithm**: Myers diff (via `diff` package)
-
-### Key Features
-
-- **Myers Diff Algorithm**: Industry-standard diff (same as Git) accurately detects only new content, ignoring shifted lines
-- **Concurrency Handling**: Uses unique conversion IDs to track regions during async LLM calls
-- **Document Tracking**: Monitors text changes to prevent overwriting user edits
-- **Smart Detection**: Identifies formatted vs. rough draft LaTeX using pattern matching and confidence scoring
-- **Error Handling**: Comprehensive error messages for connection and API issues
 
 ## License
 
-MIT
+MIT License - See [LICENSE](LICENSE) for details
 
 ## Contributing
 
-Contributions welcome! Please feel free to submit issues and pull requests.
+Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Roadmap
+## Support
 
-- [x] Visual indicators for rough draft regions (completed with highlighting)
-- [x] Batch conversion of multiple rough draft sections (completed with multi-draft support)
-- [x] Diff-based draft detection (completed)
-- [x] Paste intelligence (completed)
-- [ ] Support for custom system prompts via UI
-- [ ] Multiple LLM backend support (Ollama, etc.)
-- [ ] Undo/redo for conversions
-- [ ] LaTeX syntax validation before insertion
-- [ ] Custom keybindings for trigger
-- [ ] Streaming LLM responses for faster feedback
-- [ ] Machine learning-based draft detection
-- [ ] Custom confidence thresholds per project
+- **Issues**: [GitHub Issues](https://github.com/yourusername/autotex/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/autotex/discussions)
 
-## Credits
+---
 
-Built with inspiration from Cursor's autocomplete feature and the LaTeX Workshop extension.
-
+*Built with ❤️ for the LaTeX community*

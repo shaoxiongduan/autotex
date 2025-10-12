@@ -67,18 +67,33 @@ export function activate(context: vscode.ExtensionContext) {
     const checkServerCommand = vscode.commands.registerCommand(
         'autotex.checkServerStatus',
         async () => {
+            const config = vscode.workspace.getConfiguration('autotex');
+            const providerType = config.get<string>('provider', 'lmstudio');
+            const providerNames: Record<string, string> = {
+                'lmstudio': 'LM Studio',
+                'openrouter': 'OpenRouter',
+                'openai': 'OpenAI'
+            };
+            const providerName = providerNames[providerType] || providerType;
+
             const isRunning = await serverManager.checkServerStatus();
             if (!isRunning) {
-                const action = await vscode.window.showWarningMessage(
-                    'LM Studio server is not running',
-                    'Start Server',
-                    'Cancel'
-                );
-                if (action === 'Start Server') {
-                    await serverManager.startServer();
+                if (providerType === 'lmstudio') {
+                    const action = await vscode.window.showWarningMessage(
+                        'LM Studio server is not running',
+                        'Start Server',
+                        'Cancel'
+                    );
+                    if (action === 'Start Server') {
+                        await serverManager.startServer();
+                    }
+                } else {
+                    vscode.window.showWarningMessage(
+                        `${providerName} is not available. Please check your settings and API key.`
+                    );
                 }
             } else {
-                vscode.window.showInformationMessage('LM Studio server is running!');
+                vscode.window.showInformationMessage(`${providerName} is available and ready!`);
             }
         }
     );

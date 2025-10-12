@@ -1,4 +1,4 @@
-I want to make a tex-editor or a tex editor extension that automatically converts typed rough draft of notes into compilable and polishable tex code live in real time, kind of like cursor's tab feature except it triggers automatically when the user presses say for instance, three enters in a row.
+I want to make a tex-editor or a tex editor extension that automatically converts typed rough draft of notes into compilable and polishable tex code live in real time, kind of like cursor's tab feature except it triggers when the user presses Shift twice.
 
 The process would look as follows:
 
@@ -8,7 +8,7 @@ Already formatted latex code + rough draft section
 
 the user types in rough drafts, and that would be classified as the rough draft section
 
-when the user presses 3 enters, the rough draft section gets sent to a locally run qwen-3-4b-instruct-no-thinking LLM using LMstudio. The system prompt would be like this:
+when the user presses Shift twice, the rough draft section gets sent to a locally run LLM (via LM Studio, OpenRouter, or OpenAI). The system prompt would be like this:
 
 {
   "identifier": "@local:latex-converter",
