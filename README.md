@@ -125,16 +125,3 @@ npm run lint         # Run ESLint
 ## License
 
 MIT License - See [LICENSE](LICENSE) for details
-
-## Contributing
-
-Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/autotex/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/autotex/discussions)
-
----
-
-*Built with ❤️ for the LaTeX community*
