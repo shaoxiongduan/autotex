@@ -3,6 +3,15 @@
   "displayName": "AutoTeX",
   "description": "Automatically convert rough draft notes into compilable LaTeX code using local LLM",
   "version": "0.0.1",
+  "publisher": "shaoxiongduan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shaoxiongduan/autotex.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shaoxiongduan/autotex/issues"
+  },
+  "homepage": "https://github.com/shaoxiongduan/autotex#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
