@@ -33,7 +33,7 @@ AutoTeX is a VS Code extension that automatically transforms your rough mathemat
    - **OpenRouter**: Sign up at [openrouter.ai](https://openrouter.ai/) and get an API key
    - **OpenAI**: Get an API key from [platform.openai.com](https://platform.openai.com/)
 3. **Configure** via Settings → AutoTeX
-4. **Start writing** in any `.tex` file
+4. **Start writing** in any `.tex` or `.md` file
 
 ## Basic Usage
 
