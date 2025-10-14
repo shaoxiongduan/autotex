@@ -2,17 +2,28 @@
 
 **Convert rough draft notes into compilable LaTeX code using AI.**
 
-AutoTeX is a VS Code extension that automatically transforms your rough mathematical notes, equations, and pseudocode into properly formatted LaTeX. Type naturally, press Shift twice, and watch your drafts become publication-ready code.
+AutoTeX is a VS Code extension that automatically transforms your rough mathematical notes, equations, and pseudocode into properly formatted LaTeX. Type naturally, press Shift twice, and watch your drafts become beautiful latex elements.
+
+## AutoTeX can...
+
+### Create Tables
+![Creating Tables Demo](and.gif)
+
+### Format Equations
+
+![Dot Product Demo](dot%20product.gif)
+
+![Distance Equation Demo](dist.gif)
+
+### Write Pseudocode, draw simple graphs, and more!
 
 ## Features
 
-- 🤖 **Multiple AI Providers**: Use LM Studio (local/free), OpenRouter, or OpenAI
-- ✨ **Smart Detection**: Automatically identifies draft sections that need formatting
-- 🎨 **Visual Highlighting**: See draft sections highlighted as you type
-- ⚡ **Quick Conversion**: Press Shift×2 to convert all drafts instantly
-- 🔄 **Batch Processing**: Convert multiple draft sections simultaneously
-- 💾 **Auto-Save**: Automatically save after successful conversion
-- 🎯 **Code Blocks**: Mark specific sections with `` ```autotex `` blocks
+-  **Multiple AI Providers**: AutoTeX uses the `Qwen/Qwen3-4B-Instruct` model hosted with LM Studio locally as default to provide instant generation, but you can also use your own OpenAI and OpenRouter keys too.
+-  **Smart Detection**: AutoTeX can automatically identify draft sections that need formatting (still in development, not that accurate now)
+-  **Visual Highlighting**: See draft sections highlighted as you type
+- **Quick Conversion**: Press Shift×2 to convert all drafts instantly.
+- **Code Blocks**: Add specific sections to convert with `` ```autotex ``` `` blocks by pressing the Control key.
 
 ## Quick Start
 
@@ -28,34 +39,11 @@ AutoTeX is a VS Code extension that automatically transforms your rough mathemat
 
 ### Quick Conversion
 
-Type your rough draft and press **Shift twice** (double-tap Shift):
+Double tap the Control key to insert a AutoTeX code block, and type in your rough drafts or descriptions of what you want to generate. Once you are done, double tap Shift to convert.
 
-```
-Before:
-let x = (5 + 3) / 2
-solve for x: 2x + 5 = 15
+![demo video](and.gif)
 
-After (auto-converted):
-Let $x = \frac{5 + 3}{2}$
-
-Solve for $x$:
-\begin{equation}
-2x + 5 = 15
-\end{equation}
-```
-
-### Manual Draft Blocks
-
-Mark sections explicitly with code blocks:
-
-````
-```autotex
-for i from 1 to n:
-  sum += i * i
-```
-````
-
-Press **Shift twice** to convert all marked sections.
+Please change the system prompt to suit your specific needs in the extension settings. For note-taking, I find it useful to tell it to make sure the tex code it provides is wrapped with `$$`.
 
 ## Installation
 
@@ -103,15 +91,6 @@ Open VS Code Settings and search "AutoTeX" to configure.
 - `AutoTeX: Check Server Status` - Verify provider is available
 - `AutoTeX: Toggle Draft Highlighting` - Show/hide draft highlights
 
-## How It Works
-
-1. **Type** rough notes in your `.tex` file
-2. **Detection** identifies draft sections using diff analysis or manual blocks
-3. **Highlighting** shows drafts in green (high confidence) or yellow (low confidence)
-4. **Trigger** conversion with Shift×2 or manual command
-5. **AI processes** each draft section and generates LaTeX
-6. **Replace** draft text with formatted LaTeX code
-7. **Save** automatically (if enabled)
 
 ## Development
 
