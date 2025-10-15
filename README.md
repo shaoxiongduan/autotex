@@ -7,13 +7,13 @@ AutoTeX is a VS Code extension that automatically transforms your rough mathemat
 ## AutoTeX can...
 
 ### Create Tables
-![Creating Tables Demo](and.gif)
+![Creating Tables Demo](img/and.gif)
 
 ### Format Equations
 
-![Dot Product Demo](dot%20product.gif)
+![Dot Product Demo](img/dot%20product.gif)
 
-![Distance Equation Demo](dist.gif)
+![Distance Equation Demo](img/dist.gif)
 
 ### Write Pseudocode, draw simple graphs, and more!
 
@@ -41,7 +41,7 @@ AutoTeX is a VS Code extension that automatically transforms your rough mathemat
 
 Double tap the Control key to insert a AutoTeX code block, and type in your rough drafts or descriptions of what you want to generate. Once you are done, double tap Shift to convert.
 
-![demo video](and.gif)
+![demo video](img/and.gif)
 
 Please change the system prompt to suit your specific needs in the extension settings. For note-taking, I find it useful to tell it to make sure the tex code it provides is wrapped with `$$`.
 
